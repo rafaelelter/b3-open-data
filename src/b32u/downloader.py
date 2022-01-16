@@ -7,8 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 import pandas as pd
 
-from exceptions import RequestException
-from utils import parse_date
+from b32u.exceptions import RequestException
+from b32u.utils import parse_date
 
 logger = logging.getLogger(__name__)
 
