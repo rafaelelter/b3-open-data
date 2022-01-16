@@ -96,6 +96,6 @@ class Downloader:
 
         with ThreadPoolExecutor() as executor:
             futures = [
-                executor.submit(self.get_data, table, parse_date(dt)) for dt in dts
+                executor.submit(self.get_data, table, dt) for dt in dts
             ]
             return pd.concat([f.result() for f in futures])
