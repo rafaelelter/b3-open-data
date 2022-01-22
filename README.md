@@ -13,3 +13,15 @@ You can install from PyPI using
 ```
 pip install b32u
 ```
+
+# Usage
+
+```
+from b32u.downloader import Downloader
+from datetime import date, timedelta
+
+dl = Downloader()
+dl.start()
+dt = date.today() - timedelta(days=1)
+df = dl.get_data("TradeInformationConsolidated", dt)
+```
