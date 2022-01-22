@@ -95,9 +95,7 @@ class Downloader:
         """Multi-thread approach to download data from B3"""
 
         with ThreadPoolExecutor() as executor:
-            futures = [
-                executor.submit(self.get_data, table, dt) for dt in dts
-            ]
+            futures = [executor.submit(self.get_data, table, dt) for dt in dts]
             return pd.concat([f.result() for f in futures])
 
     def list_tables(self) -> list:
