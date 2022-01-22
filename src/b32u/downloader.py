@@ -99,3 +99,6 @@ class Downloader:
                 executor.submit(self.get_data, table, dt) for dt in dts
             ]
             return pd.concat([f.result() for f in futures])
+
+    def list_tables(self) -> list:
+        return TABLES
