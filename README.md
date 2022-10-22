@@ -5,11 +5,11 @@
 
 # About
 
-b32u is a data extractor from Brazilian Stock Exchange (B3)
+`b3-open-data` is a package with many extractors for open data of the Brazilian Stock Exchange (B3)
 
 # Instalation
 
 You can install from PyPI using  
 ```
-pip install b32u
+pip install b3-open-data
 ```
