@@ -13,6 +13,7 @@ from b3od.utils import parse_date
 
 logger = logging.getLogger(__name__)
 
+
 class B3Scrapper:
     """Wrapper Class for downloading data from the B3 website"""
 
@@ -45,14 +46,17 @@ class B3Scrapper:
         self.stop()
 
     def start(self) -> None:
+        """Starts the scrapping session"""
         if self.session is None:
             self.session = requests.Session()
 
     def stop(self) -> None:
+        """Stops the scrapping session"""
         if self.session is not None:
             self.session.close()
 
     def list_services(self):
+        """List all available services"""
         return list(self.SERVICE_DICT.keys())
 
     def _basic_request(
@@ -82,7 +86,9 @@ class B3Scrapper:
         url = f"{self.web_consolidated_base_url}/download/requestname?fileName={table}&date={dt:%Y-%m-%d}&recaptchaToken="
         response = self._basic_request("get", url)
 
-        redirect_url = response.json()["redirectUrl"].replace("~", self.web_consolidated_base_url)
+        redirect_url = response.json()["redirectUrl"].replace(
+            "~", self.web_consolidated_base_url
+        )
         response = self._basic_request("get", redirect_url)
 
         if response.text == "":
@@ -92,11 +98,16 @@ class B3Scrapper:
         df = pd.read_csv(StringIO(response.text), sep=";", decimal=",")
         return df
 
-    def __download_web_consolidated_many(self, table: str, dts: Iterable[Any]) -> pd.DataFrame:
+    def __download_web_consolidated_many(
+        self, table: str, dts: Iterable[Any]
+    ) -> pd.DataFrame:
         """Multi-thread approach to download data from B3"""
 
         with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.__download_web_consolidated, table, dt) for dt in dts]
+            futures = [
+                executor.submit(self.__download_web_consolidated, table, dt)
+                for dt in dts
+            ]
             return pd.concat([f.result() for f in futures], ignore_index=True)
 
     def __download_position_limits(self, dt: date) -> pd.DataFrame:
@@ -105,17 +116,25 @@ class B3Scrapper:
         url = f"https://bvmf.bmfbovespa.com.br/LimitesPosicoes/Posicoes/DownloadArquivoDiretorio?data={dt:%Y%m%d}"
         response = self._basic_request("get", url)
 
-        df = pd.read_csv(StringIO(base64.b64decode(response.text)), sep=";", decimal=",")
+        df = pd.read_csv(
+            StringIO(base64.b64decode(response.text)), sep=";", decimal=","
+        )
         return df
 
-    def __download_position_limits_many(self, table: str, dts: Iterable[Any]) -> pd.DataFrame:
+    def __download_position_limits_many(
+        self, table: str, dts: Iterable[Any]
+    ) -> pd.DataFrame:
         """Multi-thread approach to download data from B3"""
 
         with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.__download_position_limits, table, dt) for dt in dts]
+            futures = [
+                executor.submit(self.__download_position_limits, table, dt)
+                for dt in dts
+            ]
             return pd.concat([f.result() for f in futures], ignore_index=True)
 
     def download(self, table: str, dt: Union[Any, Iterable[Any]]) -> pd.DataFrame:
+        """Downloads data from a table in B3 website for a given date (or set of dates)"""
         if not table in self.SERVICE_DICT:
             raise ValueError(f"Table must be one of {self.SERVICE_DICT.keys()}")
         service = self.SERVICE_DICT[table]
@@ -124,9 +143,8 @@ class B3Scrapper:
             if isinstance(dt, Iterable):
                 return self.__download_web_consolidated_many(table, dt)
             return self.__download_web_consolidated(table, dt)
-        elif service == "PositionLimits":
+        if service == "PositionLimits":
             if isinstance(dt, Iterable):
                 return self.__download_position_limits_many(table, dt)
             return self.__download_position_limits(dt)
-        else:
-            raise ValueError(f"Table must be one of {self.web_consolidated_files}")
+        raise ValueError(f"Table must be one of {set(self.SERVICE_DICT.values())}")

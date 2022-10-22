@@ -2,6 +2,7 @@ from datetime import datetime, date
 
 
 def parse_date(dt: any) -> date:
+    """Parses a date from a string or a datetime object"""
     if isinstance(dt, date):
         return dt
     if isinstance(dt, datetime):
