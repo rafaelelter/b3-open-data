@@ -4,7 +4,7 @@ build-backend   = "setuptools.build_meta"
 
 [project]
 name            = "b3-open-data"
-version         = "1.0.0"
+version         = "1.0.1"
 description     = "Data extractor for the Brazilian Stock Exchange (B3)"
 readme          = "README.md"
 authors         = [{ name = "Rafael Elter", email = "rafaelelter@gmail.com" }]
@@ -28,7 +28,7 @@ dev = ["black", "bumpver", "pytest"]
 homepage = "https://github.com/rafaelelter/b3-open-data"
 
 [tool.bumpver]
-current_version = "1.0.0"
+current_version = "1.0.1"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
