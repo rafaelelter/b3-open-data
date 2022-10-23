@@ -1,3 +1,5 @@
+"""Meta information from the services used by the scrapper"""
+
 from numpy import dtype
 
 SERVICES_DTYPES = {
