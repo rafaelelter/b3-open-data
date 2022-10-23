@@ -1,15 +1,17 @@
 import base64
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date
+from datetime import date, datetime
 import logging
 from io import BytesIO, StringIO
 from typing import Iterable, Union, Any
 
 import requests
 import pandas as pd
+import numpy as np
 
 from b3od.exceptions import RequestException
 from b3od.utils import parse_date
+from b3od.meta import SERVICES_DTYPES, SERVICES_DATE_COLUMNS
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +97,18 @@ class B3Scrapper:
             logger.error("No data found for %s", dt)
             return pd.DataFrame()
 
-        df = pd.read_csv(StringIO(response.text), sep=";", decimal=",")
+        df = pd.read_csv(
+            StringIO(response.text),
+            sep=";",
+            decimal=",",
+            dtype=SERVICES_DTYPES[table],
+            parse_dates=SERVICES_DATE_COLUMNS[table],
+            date_parser=(
+                lambda x: datetime.strptime(x, "%Y-%m-%d").date()
+                if not pd.isna(x)
+                else np.nan
+            ),
+        )
         return df
 
     def __download_web_consolidated_many(
@@ -111,13 +124,22 @@ class B3Scrapper:
             return pd.concat([f.result() for f in futures], ignore_index=True)
 
     def __download_position_limits(self, dt: date) -> pd.DataFrame:
-
+        table = "PositionLimits"
         dt = parse_date(dt)
         url = f"https://bvmf.bmfbovespa.com.br/LimitesPosicoes/Posicoes/DownloadArquivoDiretorio?data={dt:%Y%m%d}"
         response = self._basic_request("get", url)
 
         df = pd.read_csv(
-            BytesIO(base64.b64decode(response.text)), sep=";", decimal=","
+            BytesIO(base64.b64decode(response.text)),
+            sep=";",
+            decimal=",",
+            dtype=SERVICES_DTYPES[table],
+            parse_dates=SERVICES_DATE_COLUMNS[table],
+            date_parser=(
+                lambda x: datetime.strptime(x, "%Y-%m-%d").date()
+                if not pd.isna(x)
+                else np.nan
+            ),
         )
         return df
 
