@@ -2,7 +2,7 @@ import base64
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 import logging
-from io import StringIO
+from io import BytesIO, StringIO
 from typing import Iterable, Union, Any
 
 import requests
@@ -117,7 +117,7 @@ class B3Scrapper:
         response = self._basic_request("get", url)
 
         df = pd.read_csv(
-            StringIO(base64.b64decode(response.text)), sep=";", decimal=","
+            BytesIO(base64.b64decode(response.text)), sep=";", decimal=","
         )
         return df
 
