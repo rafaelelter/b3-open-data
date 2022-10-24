@@ -12,3 +12,20 @@ def parse_date(date_to_parse: any) -> date:
     if isinstance(date_to_parse, str):
         return date.fromisoformat(date_to_parse)
     raise ValueError(f"Invalid date format {date_to_parse}")
+
+
+def is_string(seq: any) -> bool:
+    """Checks if a variable is a string"""
+    return isinstance(seq, str)
+
+
+def is_sequence(seq: any) -> bool:
+    """Checks if a variable is a sequence"""
+
+    if is_string(seq):
+        return False
+    try:
+        len(seq)
+    except TypeError:
+        return False
+    return True
