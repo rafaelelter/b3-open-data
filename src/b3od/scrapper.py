@@ -13,7 +13,7 @@ import requests
 import pandas as pd
 import numpy as np
 
-from b3od.utils import parse_date
+from b3od.utils import parse_date, is_sequence
 from b3od.meta import SERVICES_DTYPES, SERVICES_DATE_COLUMNS
 
 logger = logging.getLogger(__name__)
@@ -172,11 +172,13 @@ class B3Scrapper:
         service = self.SERVICE_DICT[table]
 
         if service == "WebConsolidated":
-            if isinstance(query_date, Iterable):
+            if is_sequence(query_date):
+                print("Downloading many")
                 return self.__download_web_consolidated_many(table, query_date)
+            print("Downloading one")
             return self.__download_web_consolidated(table, query_date)
         if service == "PositionLimits":
-            if isinstance(query_date, Iterable):
+            if is_sequence(query_date):
                 return self.__download_position_limits_many(table, query_date)
             return self.__download_position_limits(query_date)
         raise ValueError(f"Table must be one of {set(self.SERVICE_DICT.values())}")
