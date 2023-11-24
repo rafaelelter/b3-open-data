@@ -177,9 +177,9 @@ class B3Scrapper:
 
         if service == "WebConsolidated":
             if is_sequence(query_date):
-                print("Downloading many")
+                logger.info("Downloading many")
                 return self.__download_web_consolidated_many(table, query_date)
-            print("Downloading one")
+            logger.info("Downloading one")
             return self.__download_web_consolidated(table, query_date)
         if service == "PositionLimits":
             if is_sequence(query_date):
