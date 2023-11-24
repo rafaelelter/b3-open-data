@@ -107,13 +107,17 @@ class B3Scrapper:
             sep=";",
             decimal=",",
             dtype=SERVICES_DTYPES[table],
-            parse_dates=SERVICES_DATE_COLUMNS[table],
-            date_parser=(
-                lambda x: datetime.strptime(x, "%Y-%m-%d").date()
-                if not pd.isna(x)
-                else np.nan
-            ),
+            skiprows=1  # Remove header line ('Status do Arquivo: ...')
         )
+
+        queried_data[SERVICES_DATE_COLUMNS[table]] = queried_data[
+            SERVICES_DATE_COLUMNS[table]
+        ].map(
+            lambda x: datetime.strptime(x, "%Y-%m-%d").date()
+            if not pd.isna(x)
+            else np.nan,
+        )
+
         return queried_data
 
     def __download_web_consolidated_many(
