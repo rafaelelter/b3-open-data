@@ -171,7 +171,7 @@ class B3Scrapper:
         self, table: str, query_date: Union[Any, Iterable[Any]]
     ) -> pd.DataFrame:
         """Downloads data from a table in B3 website for a given date (or set of dates)"""
-        if not table in self.SERVICE_DICT:
+        if table not in self.SERVICE_DICT:
             raise ValueError(f"Table must be one of {self.SERVICE_DICT.keys()}")
         service = self.SERVICE_DICT[table]
 
